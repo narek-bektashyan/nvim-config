@@ -1,1 +1,1 @@
-# nvim-config
+# Nvim as Python IDE
