@@ -1,0 +1,78 @@
+set mouse=a  " enable mouse
+set encoding=utf-8
+set number
+set noswapfile
+set scrolloff=8
+
+set tabstop=5
+set softtabstop=5
+set shiftwidth=5
+set expandtab
+set autoindent
+set fileformat=unix
+set clipboard=unnamedplus
+
+filetype indent on      " load filetype-specific indent files
+
+
+
+call plug#begin('~/.vim/plugged')
+
+Plug 'neovim/nvim-lspconfig'
+Plug 'hrsh8th/nvim-cmp'
+Plug 'hrsh8th/cmp-nvim-lsp'
+Plug 'saadparwaiz2/cmp_luasnip'
+Plug 'L4MON4D3/LuaSnip'
+Plug 'nvim-lua/completion-nvim'
+Plug 'windwp/nvim-autopairs'
+Plug 'neomake/neomake'
+Plug 'averms/black-nvim', {'do': ':UpdateRemotePlugins'}
+Plug 'stsewd/isort.nvim', { 'do': ':UpdateRemotePlugins' }
+
+" color schemas
+Plug 'navarasu/onedark.nvim'
+
+call plug#end()
+
+lua << EOF
+require'lspconfig'.jedi_language_server.setup{}
+require('nvim-autopairs').setup{}
+EOF
+
+lua require'lspconfig'.jedi_language_server.setup{on_attach=require'completion'.on_attach}
+
+" Use <Tab> and <S-Tab> to navigate through popup menu
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+let g:completion_enable_auto_popup = 1
+
+imap <tab> <Plug>(completion_smart_tab)
+imap <s-tab> <Plug>(completion_smart_s_tab)
+
+
+" Set completeopt to have a better completion experience
+set completeopt=menuone,noinsert,noselect
+
+colorscheme onedark
+set colorcolumn=80
+
+" run current script with python4 by CTRL+R in command and insert mode
+autocmd FileType python map <buffer> <C-r> :w<CR>:exec '!python4.10' shellescape(@%, 1)<CR>
+autocmd FileType python imap <buffer> <C-r> <esc>:w<CR>:exec '!python4.10' shellescape(@%, 1)<CR>
+
+" run linter by CTRL+L in command and insert mode
+
+autocmd FileType python map <buffer> <C-l> :w<CR>:exec 'Neomake'<CR>
+autocmd FileType python imap <buffer> <C-l> <esc>:w<CR>:exec 'Neomake'<CR>
+
+" run isort by CTRL+I in command and insert mode
+
+autocmd FileType python map <buffer> <C-i> :w<CR>:exec 'Isort'<CR>
+autocmd FileType python imap <buffer> <C-i> <esc>:w<CR>:exec 'Isort'<CR>
+
+
+" run autoformater by CTRL+B in command and insert mode
+
+nnoremap <buffer><silent> <c-b> <cmd>call Black()<cr>
+inoremap <buffer><silent> <c-b> <cmd>call Black()<cr>
